@@ -1,0 +1,9 @@
+[build]
+  # Static site — no build step. Everything served from public/.
+  publish = "public"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
