@@ -637,6 +637,92 @@ body{padding-top:64px}
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
+<script>
+/* === UTM capture + lead delivery ===
+   Runs before any section markup so UTM tags are stored on the very first hit.
+   Leads go to /api/lead, which forwards them to the Telegram group; the bot
+   token stays server-side in the TELEGRAM_BOT_TOKEN environment variable. */
+(function(){
+  var UTM_KEYS=["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
+  var NOT_PROVIDED="не вказано";
+  var STORE_KEY="sp_utm";
+
+  function readStore(){
+    /* Wrapped: sessionStorage throws in some privacy modes. UTMs are then
+       simply read from the URL only, rather than breaking the form. */
+    try{var raw=window.sessionStorage.getItem(STORE_KEY);return raw?JSON.parse(raw):{};}
+    catch(e){return {};}
+  }
+
+  /* Tags only appear on the landing hit, so persist them for the whole session:
+     a visitor who scrolls, reloads or follows an in-page anchor still submits
+     the campaign that brought them here. */
+  (function captureUtms(){
+    var params=new URLSearchParams(window.location.search);
+    var stored=readStore(),found=false;
+    UTM_KEYS.forEach(function(k){
+      var v=params.get(k);
+      if(v&&v.trim()){stored[k]=v.trim().slice(0,120);found=true;}
+    });
+    if(!found)return;
+    try{window.sessionStorage.setItem(STORE_KEY,JSON.stringify(stored));}catch(e){}
+  })();
+
+  window.getUtms=function(){
+    var params=new URLSearchParams(window.location.search),stored=readStore(),out={};
+    UTM_KEYS.forEach(function(k){
+      var v=params.get(k)||stored[k]||"";
+      out[k]=v&&v.trim()?v.trim():NOT_PROVIDED;
+    });
+    return out;
+  };
+
+  /* Human-readable form names for the Telegram message. Keys match the
+     form_name already sent to GTM/GA4 with generate_lead. */
+  var FORM_LABELS={
+    price_calculator:"Калькулятор вартості",
+    steps_master_visit:"Безкоштовний виїзд майстра (5 кроків)",
+    final_cta:"Залиште номер (фінальний блок)",
+    credit_quiz_qualified:"Квіз — кваліфікований лід",
+    credit_quiz_consultation:"Квіз — заявка на консультацію"
+  };
+
+  window.sendLead=function(formName,name,phone){
+    var utms=window.getUtms();
+    var body={
+      name:(name||"").trim(),
+      phone:(phone||"").trim(),
+      form:FORM_LABELS[formName]||formName||"unknown",
+      page:window.location.href,
+      utm_source:utms.utm_source,
+      utm_medium:utms.utm_medium,
+      utm_campaign:utms.utm_campaign,
+      utm_content:utms.utm_content,
+      utm_term:utms.utm_term
+    };
+    /* keepalive lets the request finish even if the visitor navigates away
+       right after submitting. */
+    return fetch("/api/lead",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(body),
+      keepalive:true
+    }).then(function(r){
+      if(!r.ok)console.warn("Lead delivery failed with status "+r.status);
+      return r.ok;
+    }).catch(function(err){
+      console.warn("Lead delivery failed:",err&&err.message);
+      return false;
+    });
+  };
+
+  window.scrollToId=function(id){
+    var el=document.getElementById(id);
+    if(el)el.scrollIntoView({behavior:"smooth"});
+  };
+})();
+</script>
+
 <nav><a href="#top" class="logo">SunProsto</a><ul class="nav-links"><li><a href="#steps">Кроки</a></li><li><a href="#projects">Проєкти</a></li><li><a href="#contact">Контакти</a></li></ul><a href="tel:+380631405782" class="nav-phone" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'phone_nav'});">+38 (063) 140 57 82</a><a href="#contact" class="nav-cta-btn">Замовити виїзд</a><div style="display:flex;align-items:center;gap:10px"><button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button></div></nav>
 <div class="mob-menu" id="mobMenu"><a href="#services" onclick="cM()">Послуги</a><a href="#steps" onclick="cM()">Як це працює</a><a href="#projects" onclick="cM()">Проєкти</a><a href="#calc" onclick="cM()">☀ Калькулятор</a><a href="#contact" onclick="cM()">Контакти</a></div>
 <section class="hero" id="top" style="min-height:100vh;position:relative;overflow:hidden;display:flex;align-items:center">
@@ -674,7 +760,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#projects" style="font-size:16px;padding:16px 32px;border-radius:12px;font-weight:700;border:2px solid rgba(255,255,255,.6);color:#fff;text-decoration:none;background:rgba(255,255,255,.08)">Наші проєкти</a>
   </div>
 
-  <div id="scrollArrow" style="margin-top:32px;cursor:pointer;display:inline-block" onclick="document.document.getElementById('projects')?document.getElementById('projects').scrollIntoView({behavior:'smooth'})">
+  <div id="scrollArrow" style="margin-top:32px;cursor:pointer;display:inline-block" onclick="scrollToId('projects')">
     <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="animation:bounce 1.6s infinite">
       <circle cx="22" cy="22" r="20" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
       <path d="M15 19l7 7 7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -809,7 +895,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <div style="text-align:center;padding:32px 0 16px;background:var(--lb)">
-  <div onclick="document.querySelector('.trust-section, #projects, section:nth-of-type(2)').scrollIntoView({behavior:'smooth'})" style="display:inline-block;cursor:pointer">
+  <div onclick="scrollToId('services')" style="display:inline-block;cursor:pointer">
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="animation:arrowBounce 1.4s ease-in-out infinite">
       <circle cx="24" cy="24" r="22" fill="var(--y)" opacity="0.15"/>
       <circle cx="24" cy="24" r="16" fill="var(--y)"/>
@@ -835,14 +921,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="lf" style="max-width:480px;margin:0 auto;background:#fff;border-radius:20px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.08)">
     <input type="text" placeholder="Ваше ім'я" class="lf-inp" id="srv-calc-name" style="margin-bottom:12px">
     <input type="tel" placeholder="+380 ___ ___ __ __" class="lf-inp" id="srv-calc-phone" style="margin-bottom:12px">
-    <button type="button" class="lf-btn" style="width:100%" onclick="
-      var ph=document.getElementById('srv-calc-phone');
-      if(!ph||ph.value.trim().length<7){if(ph){ph.style.borderColor='#e74c3c';ph.focus();}return;}
-      document.getElementById('srv-calc-ok').style.display='block';
-      ph.value='';document.getElementById('srv-calc-name').value='';
-      window.dataLayer=window.dataLayer||[];
-      window.dataLayer.push({event:'generate_lead',form_name:'price_calculator'});
-    ">⚡ Отримати розрахунок безкоштовно</button>
+    <button type="button" class="lf-btn" style="width:100%" onclick="submitForm('srv-calc-ok','srv-calc-phone','price_calculator')">⚡ Отримати розрахунок безкоштовно</button>
     <div id="srv-calc-ok" style="display:none;margin-top:14px;color:#107A3B;font-weight:600">✅ Дякуємо! Інженер зателефонує найближчим часом.</div>
     <p style="font-size:11px;color:#aaa;margin-top:12px">Без тиску і зобов'язань</p>
   </div>
@@ -864,10 +943,13 @@ document.addEventListener("click",function(e){if(!burger.contains(e.target)&&!mm
 function submitForm(okId,phoneId,formName){
   var ph=document.getElementById(phoneId);
   if(!ph||ph.value.trim().length<7){if(ph){ph.style.borderColor="#e74c3c";ph.focus();}return;}
+  var nm=ph.parentElement.querySelector("input[type=text]");
+  /* Read the values before the inputs are cleared below. */
+  if(window.sendLead)window.sendLead(formName,nm?nm.value:"",ph.value);
   var ok=document.getElementById(okId);
   if(ok)ok.style.display="block";
+  ph.style.borderColor="";
   ph.value="";
-  var nm=ph.parentElement.querySelector("input[type=text]");
   if(nm)nm.value="";
   setTimeout(function(){if(ok)ok.style.display="none";},5000);
   window.dataLayer=window.dataLayer||[];
@@ -969,9 +1051,12 @@ document.addEventListener('DOMContentLoaded', function() {
     submitOk.addEventListener('click', function() {
       var ph = document.getElementById('cqPhone');
       if (!ph || ph.value.trim().length < 7) { if(ph){ph.style.borderColor='#e74c3c';ph.focus();} return; }
+      var nm = document.getElementById('cqName');
+      if (window.sendLead) window.sendLead('credit_quiz_qualified', nm ? nm.value : '', ph.value);
       document.getElementById('cqOk').style.display = 'block';
+      ph.style.borderColor = '';
       ph.value = '';
-      var nm = document.getElementById('cqName'); if(nm) nm.value = '';
+      if(nm) nm.value = '';
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({event:'generate_lead', form_name:'credit_quiz_qualified'});
     });
@@ -983,9 +1068,12 @@ document.addEventListener('DOMContentLoaded', function() {
     submitFail.addEventListener('click', function() {
       var ph = document.getElementById('cqPhoneF');
       if (!ph || ph.value.trim().length < 7) { if(ph){ph.style.borderColor='#e74c3c';ph.focus();} return; }
+      var nm = document.getElementById('cqNameF');
+      if (window.sendLead) window.sendLead('credit_quiz_consultation', nm ? nm.value : '', ph.value);
       document.getElementById('cqOkF').style.display = 'block';
+      ph.style.borderColor = '';
       ph.value = '';
-      var nm = document.getElementById('cqNameF'); if(nm) nm.value = '';
+      if(nm) nm.value = '';
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({event:'generate_lead', form_name:'credit_quiz_consultation'});
     });
