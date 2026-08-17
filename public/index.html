@@ -674,7 +674,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#projects" style="font-size:16px;padding:16px 32px;border-radius:12px;font-weight:700;border:2px solid rgba(255,255,255,.6);color:#fff;text-decoration:none;background:rgba(255,255,255,.08)">Наші проєкти</a>
   </div>
 
-  <div id="scrollArrow" style="margin-top:32px;cursor:pointer;display:inline-block" onclick="document.document.getElementById('projects')?document.getElementById('projects').scrollIntoView({behavior:'smooth'})">
+  <div id="scrollArrow" style="margin-top:32px;cursor:pointer;display:inline-block" onclick="var t=document.getElementById('projects');if(t)t.scrollIntoView({behavior:'smooth'})">
     <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="animation:bounce 1.6s infinite">
       <circle cx="22" cy="22" r="20" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
       <path d="M15 19l7 7 7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -809,7 +809,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <div style="text-align:center;padding:32px 0 16px;background:var(--lb)">
-  <div onclick="document.querySelector('.trust-section, #projects, section:nth-of-type(2)').scrollIntoView({behavior:'smooth'})" style="display:inline-block;cursor:pointer">
+  <div onclick="var t=document.getElementById('services');if(t)t.scrollIntoView({behavior:'smooth'})" style="display:inline-block;cursor:pointer">
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="animation:arrowBounce 1.4s ease-in-out infinite">
       <circle cx="24" cy="24" r="22" fill="var(--y)" opacity="0.15"/>
       <circle cx="24" cy="24" r="16" fill="var(--y)"/>
@@ -835,14 +835,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="lf" style="max-width:480px;margin:0 auto;background:#fff;border-radius:20px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.08)">
     <input type="text" placeholder="Ваше ім'я" class="lf-inp" id="srv-calc-name" style="margin-bottom:12px">
     <input type="tel" placeholder="+380 ___ ___ __ __" class="lf-inp" id="srv-calc-phone" style="margin-bottom:12px">
-    <button type="button" class="lf-btn" style="width:100%" onclick="
-      var ph=document.getElementById('srv-calc-phone');
-      if(!ph||ph.value.trim().length<7){if(ph){ph.style.borderColor='#e74c3c';ph.focus();}return;}
-      document.getElementById('srv-calc-ok').style.display='block';
-      ph.value='';document.getElementById('srv-calc-name').value='';
-      window.dataLayer=window.dataLayer||[];
-      window.dataLayer.push({event:'generate_lead',form_name:'price_calculator'});
-    ">⚡ Отримати розрахунок безкоштовно</button>
+    <button type="button" class="lf-btn" style="width:100%" onclick="submitForm('srv-calc-ok','srv-calc-phone','price_calculator')">⚡ Отримати розрахунок безкоштовно</button>
     <div id="srv-calc-ok" style="display:none;margin-top:14px;color:#107A3B;font-weight:600">✅ Дякуємо! Інженер зателефонує найближчим часом.</div>
     <p style="font-size:11px;color:#aaa;margin-top:12px">Без тиску і зобов'язань</p>
   </div>
@@ -857,6 +850,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="cta" id="contact"><h2>Залиште номер —<br>зателефонуємо за 15 хвилин!</h2><p>Розрахуємо окупність вашого об'єкта безкоштовно. Без тиску і зобов'язань.</p><button type="button" class="cta-collapsed-trigger" id="ctaTrigger">📋 Залишити заявку на розрахунок</button><div class="cta-lead-wrap"><div class="cta-lead-form"><input type="text" id="cta-name" placeholder="Ваше ім'я" class="cta-inp"><input type="tel" id="cta-phone" placeholder="+380 ___ ___ __ __" class="cta-inp"><button type="button" class="cta-lead-btn" onclick="submitForm('cta-ok','cta-phone','final_cta')">☀ Зателефонуйте мені</button><div class="lf-ok" id="cta-ok">✅ Дякуємо! Передзвонимо найближчим часом.</div><div class="cta-privacy">Натискаючи кнопку, ви погоджуєтесь на обробку персональних даних</div></div><div class="cta-contacts"><div class="cta-contact-item"><span class="cta-contact-icon">📱</span><div><div class="cta-contact-label">Телефон / Viber / WhatsApp</div><a href="tel:+380631405782" class="cta-contact-val" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'phone_cta'});">+38 (063) 140 57 82</a></div></div><div class="cta-contact-item"><span class="cta-contact-icon">✉️</span><div><div class="cta-contact-label">Email</div><a href="mailto:sunprosto9@gmail.com" class="cta-contact-val" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'email'});">sunprosto9@gmail.com</a></div></div><div class="cta-contact-item"><span class="cta-contact-icon">📷</span><div><div class="cta-contact-label">Instagram</div><a href="https://instagram.com/sunprosto" target="_blank" rel="noopener" class="cta-contact-val" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'instagram'});">@sunprosto</a></div></div></div></div></section>
 <footer><div class="flogo">SunProsto</div><div class="finfo">© 2025 ТОВ «СанПросто» · Сонячні рішення під ключ</div><div class="flinks"><a href="mailto:sunprosto9@gmail.com">Email</a><a href="https://instagram.com/sunprosto" target="_blank" rel="noopener">Instagram</a></div></footer>
 <script>
+/* === UTM CAPTURE + LEAD DELIVERY ===
+   UTM-мітки читаються з URL і зберігаються в sessionStorage, тому вони
+   доїжджають до заявки навіть якщо користувач гуляв по сторінці.
+   Заявка йде на /api/lead (Netlify Function), яка вже пересилає її в Telegram.
+   Токен бота живе тільки в Netlify Environment Variable TELEGRAM_BOT_TOKEN. */
+var UTM_KEYS=["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
+var LEAD_FAIL_TEXT="⚠️ Не вдалося надіслати заявку. Зателефонуйте: +38 (063) 140 57 82";
+var utmStore=(function(){
+  var saved={};
+  try{var raw=sessionStorage.getItem("sp_utm");if(raw)saved=JSON.parse(raw)||{};}catch(e){}
+  var params=new URLSearchParams(window.location.search),fresh=false;
+  UTM_KEYS.forEach(function(k){
+    var v=params.get(k);
+    if(v&&v.trim()){saved[k]=v.trim().slice(0,200);fresh=true;}
+  });
+  if(fresh){try{sessionStorage.setItem("sp_utm",JSON.stringify(saved));}catch(e){}}
+  return saved;
+})();
+function sendLead(name,phone,formName){
+  var payload={name:name||"",phone:phone||"",form:formName||"unknown",page:window.location.href};
+  UTM_KEYS.forEach(function(k){payload[k]=utmStore[k]||"";});
+  return fetch("/api/lead",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload),
+    keepalive:true
+  }).then(function(r){return r.ok;}).catch(function(){return false;});
+}
 var burger=document.getElementById("burger"),mm=document.getElementById("mobMenu");
 burger.addEventListener("click",function(){burger.classList.toggle("open");mm.classList.toggle("open");});
 function cM(){burger.classList.remove("open");mm.classList.remove("open");}
@@ -864,12 +885,26 @@ document.addEventListener("click",function(e){if(!burger.contains(e.target)&&!mm
 function submitForm(okId,phoneId,formName){
   var ph=document.getElementById(phoneId);
   if(!ph||ph.value.trim().length<7){if(ph){ph.style.borderColor="#e74c3c";ph.focus();}return;}
+  ph.style.borderColor="";
+  var box=(ph.closest&&ph.closest(".lf-row,.cta-lead-form,.lf,.lf-dark"))||ph.parentElement;
+  var nm=box?box.querySelector("input[type=text]"):null;
   var ok=document.getElementById(okId);
-  if(ok)ok.style.display="block";
+  var hideTimer=null;
+  if(ok){
+    if(!ok.getAttribute("data-ok-text"))ok.setAttribute("data-ok-text",ok.textContent);
+    ok.textContent=ok.getAttribute("data-ok-text");
+    ok.style.display="block";
+    hideTimer=setTimeout(function(){ok.style.display="none";},5000);
+  }
+  sendLead(nm?nm.value:"",ph.value,formName).then(function(sent){
+    if(!sent&&ok){
+      if(hideTimer)clearTimeout(hideTimer);
+      ok.textContent=LEAD_FAIL_TEXT;
+      ok.style.display="block";
+    }
+  });
   ph.value="";
-  var nm=ph.parentElement.querySelector("input[type=text]");
   if(nm)nm.value="";
-  setTimeout(function(){if(ok)ok.style.display="none";},5000);
   window.dataLayer=window.dataLayer||[];
   window.dataLayer.push({event:"generate_lead",form_name:formName||"unknown"});
 }
@@ -969,9 +1004,15 @@ document.addEventListener('DOMContentLoaded', function() {
     submitOk.addEventListener('click', function() {
       var ph = document.getElementById('cqPhone');
       if (!ph || ph.value.trim().length < 7) { if(ph){ph.style.borderColor='#e74c3c';ph.focus();} return; }
-      document.getElementById('cqOk').style.display = 'block';
+      ph.style.borderColor='';
+      var nm = document.getElementById('cqName');
+      var ok = document.getElementById('cqOk');
+      sendLead(nm ? nm.value : '', ph.value, 'credit_quiz_qualified').then(function(sent){
+        if (!sent && ok) ok.textContent = LEAD_FAIL_TEXT;
+      });
+      if (ok) ok.style.display = 'block';
       ph.value = '';
-      var nm = document.getElementById('cqName'); if(nm) nm.value = '';
+      if (nm) nm.value = '';
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({event:'generate_lead', form_name:'credit_quiz_qualified'});
     });
@@ -983,9 +1024,15 @@ document.addEventListener('DOMContentLoaded', function() {
     submitFail.addEventListener('click', function() {
       var ph = document.getElementById('cqPhoneF');
       if (!ph || ph.value.trim().length < 7) { if(ph){ph.style.borderColor='#e74c3c';ph.focus();} return; }
-      document.getElementById('cqOkF').style.display = 'block';
+      ph.style.borderColor='';
+      var nm = document.getElementById('cqNameF');
+      var ok = document.getElementById('cqOkF');
+      sendLead(nm ? nm.value : '', ph.value, 'credit_quiz_consultation').then(function(sent){
+        if (!sent && ok) ok.textContent = LEAD_FAIL_TEXT;
+      });
+      if (ok) ok.style.display = 'block';
       ph.value = '';
-      var nm = document.getElementById('cqNameF'); if(nm) nm.value = '';
+      if (nm) nm.value = '';
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({event:'generate_lead', form_name:'credit_quiz_consultation'});
     });
