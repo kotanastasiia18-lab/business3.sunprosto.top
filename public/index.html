@@ -674,7 +674,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#projects" style="font-size:16px;padding:16px 32px;border-radius:12px;font-weight:700;border:2px solid rgba(255,255,255,.6);color:#fff;text-decoration:none;background:rgba(255,255,255,.08)">Наші проєкти</a>
   </div>
 
-  <div id="scrollArrow" style="margin-top:32px;cursor:pointer;display:inline-block" onclick="document.document.getElementById('projects')?document.getElementById('projects').scrollIntoView({behavior:'smooth'})">
+  <div id="scrollArrow" style="margin-top:32px;cursor:pointer;display:inline-block" onclick="var t=document.getElementById('projects');if(t)t.scrollIntoView({behavior:'smooth'})">
     <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="animation:bounce 1.6s infinite">
       <circle cx="22" cy="22" r="20" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
       <path d="M15 19l7 7 7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -835,14 +835,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="lf" style="max-width:480px;margin:0 auto;background:#fff;border-radius:20px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.08)">
     <input type="text" placeholder="Ваше ім'я" class="lf-inp" id="srv-calc-name" style="margin-bottom:12px">
     <input type="tel" placeholder="+380 ___ ___ __ __" class="lf-inp" id="srv-calc-phone" style="margin-bottom:12px">
-    <button type="button" class="lf-btn" style="width:100%" onclick="
-      var ph=document.getElementById('srv-calc-phone');
-      if(!ph||ph.value.trim().length<7){if(ph){ph.style.borderColor='#e74c3c';ph.focus();}return;}
-      document.getElementById('srv-calc-ok').style.display='block';
-      ph.value='';document.getElementById('srv-calc-name').value='';
-      window.dataLayer=window.dataLayer||[];
-      window.dataLayer.push({event:'generate_lead',form_name:'price_calculator'});
-    ">⚡ Отримати розрахунок безкоштовно</button>
+    <button type="button" class="lf-btn" style="width:100%" onclick="submitForm('srv-calc-ok','srv-calc-phone','price_calculator')">⚡ Отримати розрахунок безкоштовно</button>
     <div id="srv-calc-ok" style="display:none;margin-top:14px;color:#107A3B;font-weight:600">✅ Дякуємо! Інженер зателефонує найближчим часом.</div>
     <p style="font-size:11px;color:#aaa;margin-top:12px">Без тиску і зобов'язань</p>
   </div>
@@ -861,13 +854,58 @@ var burger=document.getElementById("burger"),mm=document.getElementById("mobMenu
 burger.addEventListener("click",function(){burger.classList.toggle("open");mm.classList.toggle("open");});
 function cM(){burger.classList.remove("open");mm.classList.remove("open");}
 document.addEventListener("click",function(e){if(!burger.contains(e.target)&&!mm.contains(e.target))cM();});
+
+/* === UTM-мітки: зберігаємо перший візит, щоб вони не втратились під час навігації === */
+var UTM_KEYS=["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
+function captureUtm(){
+  var q=new URLSearchParams(location.search),fresh={},has=false;
+  UTM_KEYS.forEach(function(k){
+    var v=(q.get(k)||"").trim();
+    if(v){fresh[k]=v;has=true;}
+  });
+  try{
+    if(has)sessionStorage.setItem("sp_utm",JSON.stringify(fresh));
+    else{
+      var saved=sessionStorage.getItem("sp_utm");
+      if(saved)fresh=JSON.parse(saved)||{};
+    }
+  }catch(e){/* sessionStorage може бути недоступний — просто працюємо без нього */}
+  var out={};
+  UTM_KEYS.forEach(function(k){out[k]=fresh[k]||"не вказано";});
+  return out;
+}
+captureUtm();
+
+/* Надсилає заявку у Telegram через Netlify-функцію (токен лишається на сервері). */
+function sendLead(name,phone,formName){
+  var body={name:name||"",phone:phone||"",form:formName||"unknown",page:location.href,utm:captureUtm()};
+  try{
+    return fetch("/api/lead",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(body),
+      keepalive:true
+    }).then(function(r){
+      if(!r.ok)throw new Error("lead_http_"+r.status);
+    }).catch(function(err){
+      console.error("Не вдалося надіслати заявку:",err&&err.message);
+      window.dataLayer=window.dataLayer||[];
+      window.dataLayer.push({event:"lead_send_error",form_name:formName||"unknown"});
+    });
+  }catch(e){
+    console.error("Не вдалося надіслати заявку:",e&&e.message);
+  }
+}
+
 function submitForm(okId,phoneId,formName){
   var ph=document.getElementById(phoneId);
   if(!ph||ph.value.trim().length<7){if(ph){ph.style.borderColor="#e74c3c";ph.focus();}return;}
+  ph.style.borderColor="";
   var ok=document.getElementById(okId);
   if(ok)ok.style.display="block";
-  ph.value="";
   var nm=ph.parentElement.querySelector("input[type=text]");
+  sendLead(nm?nm.value:"",ph.value,formName);
+  ph.value="";
   if(nm)nm.value="";
   setTimeout(function(){if(ok)ok.style.display="none";},5000);
   window.dataLayer=window.dataLayer||[];
@@ -969,9 +1007,12 @@ document.addEventListener('DOMContentLoaded', function() {
     submitOk.addEventListener('click', function() {
       var ph = document.getElementById('cqPhone');
       if (!ph || ph.value.trim().length < 7) { if(ph){ph.style.borderColor='#e74c3c';ph.focus();} return; }
+      ph.style.borderColor='';
       document.getElementById('cqOk').style.display = 'block';
+      var nm = document.getElementById('cqName');
+      sendLead(nm ? nm.value : '', ph.value, 'credit_quiz_qualified');
       ph.value = '';
-      var nm = document.getElementById('cqName'); if(nm) nm.value = '';
+      if(nm) nm.value = '';
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({event:'generate_lead', form_name:'credit_quiz_qualified'});
     });
@@ -983,9 +1024,12 @@ document.addEventListener('DOMContentLoaded', function() {
     submitFail.addEventListener('click', function() {
       var ph = document.getElementById('cqPhoneF');
       if (!ph || ph.value.trim().length < 7) { if(ph){ph.style.borderColor='#e74c3c';ph.focus();} return; }
+      ph.style.borderColor='';
       document.getElementById('cqOkF').style.display = 'block';
+      var nm = document.getElementById('cqNameF');
+      sendLead(nm ? nm.value : '', ph.value, 'credit_quiz_consultation');
       ph.value = '';
-      var nm = document.getElementById('cqNameF'); if(nm) nm.value = '';
+      if(nm) nm.value = '';
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({event:'generate_lead', form_name:'credit_quiz_consultation'});
     });
