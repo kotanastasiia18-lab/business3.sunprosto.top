@@ -56,9 +56,27 @@ section; if either is requested, add the section first, then the menu item.
 - Real business contact data lives in the markup: phone `+380631405782`,
   email `sunprosto9@gmail.com`, Instagram `@sunprosto`. Don't invent alternatives.
 
-## Known gap
+## Lead delivery
 
-The calculator and CTA blocks collect a name and phone number but **do not submit
-anywhere** — the buttons only validate input, show a confirmation state and fire a
-`dataLayer` event. Wiring them to Netlify Forms (or a function) is the natural next
-step; read the `netlify-forms` skill and run its activation script if you do.
+Every lead form on the page routes through `sendLead(name, phone, formName)` in the
+main `<script>` block, which POSTs JSON to `/api/lead`
+(`netlify/functions/lead.mts`). That function formats the lead and posts it to a
+Telegram group via the Bot API.
+
+- The bot token comes **only** from the `TELEGRAM_BOT_TOKEN` environment variable —
+  never put it in `public/index.html`.
+- The destination chat id is a constant in `lead.mts`. Note there is also an unused
+  `TELEGRAM_CHAT_ID` env var on the site holding a different value; the function
+  deliberately does not read it.
+- `getUTM()` reads the five `utm_*` params from the URL, mirrors them into
+  `sessionStorage` so they survive in-page navigation, and falls back to the string
+  `не вказано`. Any new form must go through `sendLead` to inherit this.
+- Sending a lead is separate from analytics: the `generate_lead` dataLayer push
+  stays exactly where it was. A failed send pushes `lead_send_error` instead of
+  interfering with it.
+
+Two blocks of JavaScript reference markup that is **not** in the page: the
+`PRICES` / `.cp-btn` power calculator and the `.cq-wrap` credit quiz. Both guard
+for missing elements so they are inert, not broken. Their submit handlers are
+already wired to `sendLead`, so restoring either section's markup is enough to make
+it deliver leads.
