@@ -56,9 +56,26 @@ section; if either is requested, add the section first, then the menu item.
 - Real business contact data lives in the markup: phone `+380631405782`,
   email `sunprosto9@gmail.com`, Instagram `@sunprosto`. Don't invent alternatives.
 
+## Lead delivery
+
+All lead forms post to `netlify/functions/lead.mts` (routed at `/api/lead`), which
+relays them to a Telegram group. The bot token comes from the `TELEGRAM_BOT_TOKEN`
+environment variable and must never be placed in the markup; the chat id is a
+constant in the function.
+
+Every form goes through one shared `submitForm(okId, phoneId, formName, nameId)`
+helper in the first `<script>` block. To add a form, give the name and phone inputs
+ids and call that helper — don't hand-roll another inline handler. The helper also
+owns phone validation, the confirmation box, the UTM payload and the existing
+`generate_lead` `dataLayer` push, which must keep firing unchanged for GA4/Ads.
+
+UTM values (`utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`)
+are read from the URL on submit, cached first-touch in `sessionStorage` under
+`sp_utm`, and fall back to `не вказано` server-side.
+
 ## Known gap
 
-The calculator and CTA blocks collect a name and phone number but **do not submit
-anywhere** — the buttons only validate input, show a confirmation state and fire a
-`dataLayer` event. Wiring them to Netlify Forms (or a function) is the natural next
-step; read the `netlify-forms` skill and run its activation script if you do.
+The `<style>` and `<script>` blocks still carry a credit quiz (`.cq-wrap`, `cqs1`…)
+and a package-price calculator (`PRICES`, `.cp-btn` radios, `cpr*` result ids) whose
+markup is not in the page. Both are null-guarded so they throw nothing, and both are
+already wired for lead delivery — if those sections are restored, they work as-is.
