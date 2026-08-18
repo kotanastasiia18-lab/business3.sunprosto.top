@@ -629,6 +629,17 @@ body{padding-top:64px}
 @media(max-width:480px){
   .trust-logos-row{grid-template-columns:repeat(2,1fr) !important;gap:12px !important}
 }
+
+/* Mobile nav: logo + phone + CTA + burger overflowed 56px of fixed nav and pushed
+   the burger out of the viewport, making the mobile menu unreachable. */
+@media(max-width:767px){
+  .nav-cta-btn{display:none !important}
+  .nav-phone{font-size:13px !important}
+  .mob-menu{top:52px}
+}
+@media(max-width:400px){
+  .nav-phone{display:none !important}
+}
 </style>
 </head>
 <body>
@@ -674,8 +685,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#projects" style="font-size:16px;padding:16px 32px;border-radius:12px;font-weight:700;border:2px solid rgba(255,255,255,.6);color:#fff;text-decoration:none;background:rgba(255,255,255,.08)">Наші проєкти</a>
   </div>
 
-  <div id="scrollArrow" style="margin-top:32px;cursor:pointer;display:inline-block" onclick="document.document.getElementById('projects')?document.getElementById('projects').scrollIntoView({behavior:'smooth'})">
-    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="animation:bounce 1.6s infinite">
+  <div id="scrollArrow" style="margin-top:32px;cursor:pointer;display:inline-block" onclick="var t=document.getElementById('projects');if(t)t.scrollIntoView({behavior:'smooth'})">
+    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="animation:arrowBounce 1.6s infinite">
       <circle cx="22" cy="22" r="20" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
       <path d="M15 19l7 7 7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
@@ -835,41 +846,86 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="lf" style="max-width:480px;margin:0 auto;background:#fff;border-radius:20px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.08)">
     <input type="text" placeholder="Ваше ім'я" class="lf-inp" id="srv-calc-name" style="margin-bottom:12px">
     <input type="tel" placeholder="+380 ___ ___ __ __" class="lf-inp" id="srv-calc-phone" style="margin-bottom:12px">
-    <button type="button" class="lf-btn" style="width:100%" onclick="
-      var ph=document.getElementById('srv-calc-phone');
-      if(!ph||ph.value.trim().length<7){if(ph){ph.style.borderColor='#e74c3c';ph.focus();}return;}
-      document.getElementById('srv-calc-ok').style.display='block';
-      ph.value='';document.getElementById('srv-calc-name').value='';
-      window.dataLayer=window.dataLayer||[];
-      window.dataLayer.push({event:'generate_lead',form_name:'price_calculator'});
-    ">⚡ Отримати розрахунок безкоштовно</button>
+    <button type="button" class="lf-btn" style="width:100%" onclick="submitForm('srv-calc-ok','srv-calc-phone','price_calculator','srv-calc-name')">⚡ Отримати розрахунок безкоштовно</button>
     <div id="srv-calc-ok" style="display:none;margin-top:14px;color:#107A3B;font-weight:600">✅ Дякуємо! Інженер зателефонує найближчим часом.</div>
     <p style="font-size:11px;color:#aaa;margin-top:12px">Без тиску і зобов'язань</p>
   </div>
 </div>
 </section>
 <section class="rev-sec"><div style="text-align:center;margin-bottom:40px"><div class="stag" style="font-size:32px;letter-spacing:.02em;color:#fff;font-family:'League Spartan',sans-serif;font-weight:900">Відгуки клієнтів</div><p class="sdesc" style="margin:0 auto;color:rgba(255,255,255,.5)">Натисніть ▶ щоб переглянути відгук на Vimeo</p></div><div class="rev-grid"><a class="rev-card" href="https://vimeo.com/1112727973" target="_blank" rel="noopener"><div class="rev-thumb" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjgwIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI4MCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzFhNmIzYyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMyZDllNWYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJzaGFkb3ciPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iNCIgc3RkRGV2aWF0aW9uPSI4IiBmbG9vZC1vcGFjaXR5PSIwLjE1Ii8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgPCEtLSBCYWNrZ3JvdW5kIC0tPgogIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDwhLS0gU3VuIHJheXMgZGVjb3JhdGlvbiAtLT4KICA8ZyBvcGFjaXR5PSIwLjEyIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMDAsMTQwKSI+CiAgICA8bGluZSB4MT0iMCIgeTE9Ii02MCIgeDI9IjAiIHkyPSItOTUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgwKSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDQ1KSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDkwKSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDEzNSkiLz48bGluZSB4MT0iMCIgeTE9Ii02MCIgeDI9IjAiIHkyPSItOTUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgxODApIi8+PGxpbmUgeDE9IjAiIHkxPSItNjAiIHgyPSIwIiB5Mj0iLTk1IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgdHJhbnNmb3JtPSJyb3RhdGUoMjI1KSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDI3MCkiLz48bGluZSB4MT0iMCIgeTE9Ii02MCIgeDI9IjAiIHkyPSItOTUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgzMTUpIi8+CiAgPC9nPgogIDwhLS0gQ2lyY2xlIGJhY2tncm91bmQgZm9yIGljb24gLS0+CiAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTIwIiByPSI2MiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBmaWx0ZXI9InVybCgjc2hhZG93KSIvPgogIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjEyMCIgcj0iNTQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xNSkiLz4KICA8IS0tIEVtb2ppIC0tPgogIDx0ZXh0IHg9IjIwMCIgeT0iMTQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjUyIj7wn5GpPC90ZXh0PgogIDwhLS0gU3RhcnMgLS0+CiAgPHRleHQgeD0iMjAwIiB5PSIyMDgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiNGRkQ3MDAiIGxldHRlci1zcGFjaW5nPSI0Ij7imIXimIXimIXimIXimIU8L3RleHQ+CiAgPCEtLSBQbGF5IGJ1dHRvbiBoaW50IC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIwMCwyNDgpIj4KICAgIDxyZWN0IHg9Ii01MiIgeT0iLTEyIiB3aWR0aD0iMTA0IiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4yKSIvPgogICAgPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeT0iNCIgZm9udC1zaXplPSIxMSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJJbnRlcixzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNjAwIiBsZXR0ZXItc3BhY2luZz0iMSI+4pa2INCS0IbQlNCV0J7QktCG0JTQk9Cj0Jo8L3RleHQ+CiAgPC9nPgo8L3N2Zz4=')"><div class="rev-play"><div class="rev-play-btn">▶</div><div class="rev-play-label">Дивитись відгук</div></div><div class="rev-vimeo-badge">▶ Vimeo</div></div><div class="rev-body"><div class="rev-stars">★★★★★</div><div class="rev-name">Клієнтка SunProsto</div><div class="rev-loc">📍 Одеська обл., будинок з панелями</div></div></a><a class="rev-card" href="https://vimeo.com/1112728389" target="_blank" rel="noopener"><div class="rev-thumb" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjgwIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI4MCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzFhNGE3YSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMyZDZlYjUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJzaGFkb3ciPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iNCIgc3RkRGV2aWF0aW9uPSI4IiBmbG9vZC1vcGFjaXR5PSIwLjE1Ii8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgPCEtLSBCYWNrZ3JvdW5kIC0tPgogIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDwhLS0gU3VuIHJheXMgZGVjb3JhdGlvbiAtLT4KICA8ZyBvcGFjaXR5PSIwLjEyIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMDAsMTQwKSI+CiAgICA8bGluZSB4MT0iMCIgeTE9Ii02MCIgeDI9IjAiIHkyPSItOTUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgwKSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDQ1KSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDkwKSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDEzNSkiLz48bGluZSB4MT0iMCIgeTE9Ii02MCIgeDI9IjAiIHkyPSItOTUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgxODApIi8+PGxpbmUgeDE9IjAiIHkxPSItNjAiIHgyPSIwIiB5Mj0iLTk1IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgdHJhbnNmb3JtPSJyb3RhdGUoMjI1KSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDI3MCkiLz48bGluZSB4MT0iMCIgeTE9Ii02MCIgeDI9IjAiIHkyPSItOTUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgzMTUpIi8+CiAgPC9nPgogIDwhLS0gQ2lyY2xlIGJhY2tncm91bmQgZm9yIGljb24gLS0+CiAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTIwIiByPSI2MiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBmaWx0ZXI9InVybCgjc2hhZG93KSIvPgogIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjEyMCIgcj0iNTQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xNSkiLz4KICA8IS0tIEVtb2ppIC0tPgogIDx0ZXh0IHg9IjIwMCIgeT0iMTQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjUyIj7wn5GpPC90ZXh0PgogIDwhLS0gU3RhcnMgLS0+CiAgPHRleHQgeD0iMjAwIiB5PSIyMDgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiNGRkQ3MDAiIGxldHRlci1zcGFjaW5nPSI0Ij7imIXimIXimIXimIXimIU8L3RleHQ+CiAgPCEtLSBQbGF5IGJ1dHRvbiBoaW50IC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIwMCwyNDgpIj4KICAgIDxyZWN0IHg9Ii01MiIgeT0iLTEyIiB3aWR0aD0iMTA0IiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4yKSIvPgogICAgPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeT0iNCIgZm9udC1zaXplPSIxMSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJJbnRlcixzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNjAwIiBsZXR0ZXItc3BhY2luZz0iMSI+4pa2INCS0IbQlNCV0J7QktCG0JTQk9Cj0Jo8L3RleHQ+CiAgPC9nPgo8L3N2Zz4=')"><div class="rev-play"><div class="rev-play-btn">▶</div><div class="rev-play-label">Дивитись відгук</div></div><div class="rev-vimeo-badge">▶ Vimeo</div></div><div class="rev-body"><div class="rev-stars">★★★★★</div><div class="rev-name">Клієнтка SunProsto</div><div class="rev-loc">📍 Одеська обл., приватний будинок</div></div></a><a class="rev-card" href="https://vimeo.com/1113151606" target="_blank" rel="noopener"><div class="rev-thumb" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjgwIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI4MCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzdhM2QxYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNiNTVlMmQiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJzaGFkb3ciPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iNCIgc3RkRGV2aWF0aW9uPSI4IiBmbG9vZC1vcGFjaXR5PSIwLjE1Ii8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgPCEtLSBCYWNrZ3JvdW5kIC0tPgogIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDwhLS0gU3VuIHJheXMgZGVjb3JhdGlvbiAtLT4KICA8ZyBvcGFjaXR5PSIwLjEyIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMDAsMTQwKSI+CiAgICA8bGluZSB4MT0iMCIgeTE9Ii02MCIgeDI9IjAiIHkyPSItOTUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgwKSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDQ1KSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDkwKSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDEzNSkiLz48bGluZSB4MT0iMCIgeTE9Ii02MCIgeDI9IjAiIHkyPSItOTUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgxODApIi8+PGxpbmUgeDE9IjAiIHkxPSItNjAiIHgyPSIwIiB5Mj0iLTk1IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgdHJhbnNmb3JtPSJyb3RhdGUoMjI1KSIvPjxsaW5lIHgxPSIwIiB5MT0iLTYwIiB4Mj0iMCIgeTI9Ii05NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHRyYW5zZm9ybT0icm90YXRlKDI3MCkiLz48bGluZSB4MT0iMCIgeTE9Ii02MCIgeDI9IjAiIHkyPSItOTUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgzMTUpIi8+CiAgPC9nPgogIDwhLS0gQ2lyY2xlIGJhY2tncm91bmQgZm9yIGljb24gLS0+CiAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTIwIiByPSI2MiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBmaWx0ZXI9InVybCgjc2hhZG93KSIvPgogIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjEyMCIgcj0iNTQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xNSkiLz4KICA8IS0tIEVtb2ppIC0tPgogIDx0ZXh0IHg9IjIwMCIgeT0iMTQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjUyIj7wn5GoPC90ZXh0PgogIDwhLS0gU3RhcnMgLS0+CiAgPHRleHQgeD0iMjAwIiB5PSIyMDgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiNGRkQ3MDAiIGxldHRlci1zcGFjaW5nPSI0Ij7imIXimIXimIXimIXimIU8L3RleHQ+CiAgPCEtLSBQbGF5IGJ1dHRvbiBoaW50IC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIwMCwyNDgpIj4KICAgIDxyZWN0IHg9Ii01MiIgeT0iLTEyIiB3aWR0aD0iMTA0IiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4yKSIvPgogICAgPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeT0iNCIgZm9udC1zaXplPSIxMSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJJbnRlcixzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNjAwIiBsZXR0ZXItc3BhY2luZz0iMSI+4pa2INCS0IbQlNCV0J7QktCG0JTQk9Cj0Jo8L3RleHQ+CiAgPC9nPgo8L3N2Zz4=')"><div class="rev-play"><div class="rev-play-btn">▶</div><div class="rev-play-label">Дивитись відгук</div></div><div class="rev-vimeo-badge">▶ Vimeo</div></div><div class="rev-body"><div class="rev-stars">★★★★★</div><div class="rev-name">Клієнт SunProsto</div><div class="rev-loc">📍 с-ще Доброслав, Одеська обл.</div></div></a></div></section>
-<section class="steps" id="steps"><div style="text-align:center"><div class="stag">Як це працює</div><h2 class="stitle" style="color:#fff">5 кроків до запуску</h2><p class="sdesc" style="color:rgba(255,255,255,.5);margin:0 auto">Від першого дзвінка до запуску станції.</p></div><div class="steps-row"><div class="step"><div class="step-n">1</div><div><h3>Прорахунок та заміри</h3><p>1–2 дні</p></div></div><div class="step"><div class="step-n">2</div><div><h3>Розрахунок окупності</h3><p>3–5 днів</p></div></div><div class="step"><div class="step-n">3</div><div><h3>Договір та постачання</h3><p>Офіційний договір</p></div></div><div class="step"><div class="step-n">4</div><div><h3>Монтаж</h3><p>3–14 днів</p></div></div><div class="step"><div class="step-n">5</div><div><h3>Запуск та сервіс</h3><p>Гарантія і підтримка</p></div></div></div><div style="margin-top:48px"><div class="lf-dark" style="max-width:560px;margin:0 auto"><div class="lf-title">Замовити безкоштовний виїзд майстра</div><div class="lf-sub">Після першого дзвінка ви вже будете знати скільки зекономите</div><div class="lf-row"><input type="text" placeholder="Ваше ім'я" class="lf-inp"><input type="tel" id="lf-ph-stp" placeholder="+380 ___ ___ __ __" class="lf-inp"><button type="button" class="lf-btn" onclick="submitForm('lf-ok-stp','lf-ph-stp','steps_master_visit')">Замовити →</button></div><div class="lf-ok" id="lf-ok-stp">✅ Дякуємо! Наш інженер зв'яжеться найближчим часом.</div></div></div></section>
+<section class="steps" id="steps"><div style="text-align:center"><div class="stag">Як це працює</div><h2 class="stitle" style="color:#fff">5 кроків до запуску</h2><p class="sdesc" style="color:rgba(255,255,255,.5);margin:0 auto">Від першого дзвінка до запуску станції.</p></div><div class="steps-row"><div class="step"><div class="step-n">1</div><div><h3>Прорахунок та заміри</h3><p>1–2 дні</p></div></div><div class="step"><div class="step-n">2</div><div><h3>Розрахунок окупності</h3><p>3–5 днів</p></div></div><div class="step"><div class="step-n">3</div><div><h3>Договір та постачання</h3><p>Офіційний договір</p></div></div><div class="step"><div class="step-n">4</div><div><h3>Монтаж</h3><p>3–14 днів</p></div></div><div class="step"><div class="step-n">5</div><div><h3>Запуск та сервіс</h3><p>Гарантія і підтримка</p></div></div></div><div style="margin-top:48px"><div class="lf-dark" style="max-width:560px;margin:0 auto"><div class="lf-title">Замовити безкоштовний виїзд майстра</div><div class="lf-sub">Після першого дзвінка ви вже будете знати скільки зекономите</div><div class="lf-row"><input type="text" id="lf-nm-stp" placeholder="Ваше ім'я" class="lf-inp"><input type="tel" id="lf-ph-stp" placeholder="+380 ___ ___ __ __" class="lf-inp"><button type="button" class="lf-btn" onclick="submitForm('lf-ok-stp','lf-ph-stp','steps_master_visit','lf-nm-stp')">Замовити →</button></div><div class="lf-ok" id="lf-ok-stp">✅ Дякуємо! Наш інженер зв'яжеться найближчим часом.</div></div></div></section>
 
 
 
 
-<section class="cta" id="contact"><h2>Залиште номер —<br>зателефонуємо за 15 хвилин!</h2><p>Розрахуємо окупність вашого об'єкта безкоштовно. Без тиску і зобов'язань.</p><button type="button" class="cta-collapsed-trigger" id="ctaTrigger">📋 Залишити заявку на розрахунок</button><div class="cta-lead-wrap"><div class="cta-lead-form"><input type="text" id="cta-name" placeholder="Ваше ім'я" class="cta-inp"><input type="tel" id="cta-phone" placeholder="+380 ___ ___ __ __" class="cta-inp"><button type="button" class="cta-lead-btn" onclick="submitForm('cta-ok','cta-phone','final_cta')">☀ Зателефонуйте мені</button><div class="lf-ok" id="cta-ok">✅ Дякуємо! Передзвонимо найближчим часом.</div><div class="cta-privacy">Натискаючи кнопку, ви погоджуєтесь на обробку персональних даних</div></div><div class="cta-contacts"><div class="cta-contact-item"><span class="cta-contact-icon">📱</span><div><div class="cta-contact-label">Телефон / Viber / WhatsApp</div><a href="tel:+380631405782" class="cta-contact-val" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'phone_cta'});">+38 (063) 140 57 82</a></div></div><div class="cta-contact-item"><span class="cta-contact-icon">✉️</span><div><div class="cta-contact-label">Email</div><a href="mailto:sunprosto9@gmail.com" class="cta-contact-val" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'email'});">sunprosto9@gmail.com</a></div></div><div class="cta-contact-item"><span class="cta-contact-icon">📷</span><div><div class="cta-contact-label">Instagram</div><a href="https://instagram.com/sunprosto" target="_blank" rel="noopener" class="cta-contact-val" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'instagram'});">@sunprosto</a></div></div></div></div></section>
+<section class="cta" id="contact"><h2>Залиште номер —<br>зателефонуємо за 15 хвилин!</h2><p>Розрахуємо окупність вашого об'єкта безкоштовно. Без тиску і зобов'язань.</p><button type="button" class="cta-collapsed-trigger" id="ctaTrigger">📋 Залишити заявку на розрахунок</button><div class="cta-lead-wrap"><div class="cta-lead-form"><input type="text" id="cta-name" placeholder="Ваше ім'я" class="cta-inp"><input type="tel" id="cta-phone" placeholder="+380 ___ ___ __ __" class="cta-inp"><button type="button" class="cta-lead-btn" onclick="submitForm('cta-ok','cta-phone','final_cta','cta-name')">☀ Зателефонуйте мені</button><div class="lf-ok" id="cta-ok">✅ Дякуємо! Передзвонимо найближчим часом.</div><div class="cta-privacy">Натискаючи кнопку, ви погоджуєтесь на обробку персональних даних</div></div><div class="cta-contacts"><div class="cta-contact-item"><span class="cta-contact-icon">📱</span><div><div class="cta-contact-label">Телефон / Viber / WhatsApp</div><a href="tel:+380631405782" class="cta-contact-val" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'phone_cta'});">+38 (063) 140 57 82</a></div></div><div class="cta-contact-item"><span class="cta-contact-icon">✉️</span><div><div class="cta-contact-label">Email</div><a href="mailto:sunprosto9@gmail.com" class="cta-contact-val" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'email'});">sunprosto9@gmail.com</a></div></div><div class="cta-contact-item"><span class="cta-contact-icon">📷</span><div><div class="cta-contact-label">Instagram</div><a href="https://instagram.com/sunprosto" target="_blank" rel="noopener" class="cta-contact-val" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'contact_click',contact_type:'instagram'});">@sunprosto</a></div></div></div></div></section>
 <footer><div class="flogo">SunProsto</div><div class="finfo">© 2025 ТОВ «СанПросто» · Сонячні рішення під ключ</div><div class="flinks"><a href="mailto:sunprosto9@gmail.com">Email</a><a href="https://instagram.com/sunprosto" target="_blank" rel="noopener">Instagram</a></div></footer>
 <script>
 var burger=document.getElementById("burger"),mm=document.getElementById("mobMenu");
 burger.addEventListener("click",function(){burger.classList.toggle("open");mm.classList.toggle("open");});
 function cM(){burger.classList.remove("open");mm.classList.remove("open");}
 document.addEventListener("click",function(e){if(!burger.contains(e.target)&&!mm.contains(e.target))cM();});
-function submitForm(okId,phoneId,formName){
-  var ph=document.getElementById(phoneId);
-  if(!ph||ph.value.trim().length<7){if(ph){ph.style.borderColor="#e74c3c";ph.focus();}return;}
+/* === UTM capture (first touch, kept for the tab) === */
+var SP_UTM_KEYS=["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
+function spUtm(){
+  var qs=new URLSearchParams(window.location.search),stored={},out={},fresh=false;
+  try{stored=JSON.parse(sessionStorage.getItem("sp_utm")||"{}")||{};}catch(e){}
+  SP_UTM_KEYS.forEach(function(k){
+    var v=(qs.get(k)||"").trim();
+    if(v){out[k]=v;fresh=true;}
+    else if(stored[k])out[k]=stored[k];
+  });
+  if(fresh){try{sessionStorage.setItem("sp_utm",JSON.stringify(out));}catch(e){}}
+  return out;
+}
+function spValidPhone(v){return String(v||"").replace(/\D/g,"").length>=9;}
+/* Confirmation box state: sent=true shows the original message, false shows a call-us fallback. */
+var spTimers={};
+function spLeadResult(okId,sent){
   var ok=document.getElementById(okId);
-  if(ok)ok.style.display="block";
+  if(!ok)return;
+  if(!ok.hasAttribute("data-sp-text")){
+    ok.setAttribute("data-sp-text",ok.textContent);
+    ok.setAttribute("data-sp-color",ok.style.color||"");
+    ok.setAttribute("data-sp-bg",ok.style.background||"");
+  }
+  ok.style.display="block";
+  if(spTimers[okId]){clearTimeout(spTimers[okId]);spTimers[okId]=null;}
+  if(sent){
+    ok.textContent=ok.getAttribute("data-sp-text");
+    ok.style.color=ok.getAttribute("data-sp-color");
+    ok.style.background=ok.getAttribute("data-sp-bg");
+    spTimers[okId]=setTimeout(function(){ok.style.display="none";},5000);
+  }else{
+    ok.textContent="\u26a0\ufe0f Не вдалося надіслати заявку. Зателефонуйте, будь ласка: +38 (063) 140 57 82";
+    ok.style.color="#8a4b00";
+    ok.style.background="#fff3cd";
+  }
+}
+/* Posts the lead to the Netlify function, which relays it to Telegram. */
+function spSendLead(name,phone,formName,okId){
+  var payload=spUtm();
+  payload.name=name||"";
+  payload.phone=phone||"";
+  payload.form=formName||"unknown";
+  payload.page=window.location.href;
+  var settle=function(sent){if(!sent)spLeadResult(okId,false);};
+  try{
+    fetch("/api/lead",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),keepalive:true})
+      .then(function(r){return r.json().catch(function(){return{ok:r.ok};});})
+      .then(function(d){settle(!!(d&&d.ok));})
+      .catch(function(){settle(false);});
+  }catch(e){settle(false);}
+}
+function submitForm(okId,phoneId,formName,nameId){
+  var ph=document.getElementById(phoneId);
+  if(!ph||!spValidPhone(ph.value)){if(ph){ph.style.borderColor="#e74c3c";ph.focus();}return;}
+  ph.style.borderColor="";
+  var nm=nameId?document.getElementById(nameId):ph.parentElement.querySelector("input[type=text]");
+  spLeadResult(okId,true);
+  spSendLead(nm?nm.value:"",ph.value,formName,okId);
   ph.value="";
-  var nm=ph.parentElement.querySelector("input[type=text]");
   if(nm)nm.value="";
-  setTimeout(function(){if(ok)ok.style.display="none";},5000);
   window.dataLayer=window.dataLayer||[];
   window.dataLayer.push({event:"generate_lead",form_name:formName||"unknown"});
 }
@@ -967,13 +1023,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var submitOk = wrap.querySelector('.cq-submit-ok');
   if (submitOk) {
     submitOk.addEventListener('click', function() {
-      var ph = document.getElementById('cqPhone');
-      if (!ph || ph.value.trim().length < 7) { if(ph){ph.style.borderColor='#e74c3c';ph.focus();} return; }
-      document.getElementById('cqOk').style.display = 'block';
-      ph.value = '';
-      var nm = document.getElementById('cqName'); if(nm) nm.value = '';
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({event:'generate_lead', form_name:'credit_quiz_qualified'});
+      submitForm('cqOk','cqPhone','credit_quiz_qualified','cqName');
     });
   }
 
@@ -981,13 +1031,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var submitFail = wrap.querySelector('.cq-submit-fail');
   if (submitFail) {
     submitFail.addEventListener('click', function() {
-      var ph = document.getElementById('cqPhoneF');
-      if (!ph || ph.value.trim().length < 7) { if(ph){ph.style.borderColor='#e74c3c';ph.focus();} return; }
-      document.getElementById('cqOkF').style.display = 'block';
-      ph.value = '';
-      var nm = document.getElementById('cqNameF'); if(nm) nm.value = '';
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({event:'generate_lead', form_name:'credit_quiz_consultation'});
+      submitForm('cqOkF','cqPhoneF','credit_quiz_consultation','cqNameF');
     });
   }
 
