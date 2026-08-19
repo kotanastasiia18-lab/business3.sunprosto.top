@@ -56,9 +56,36 @@ section; if either is requested, add the section first, then the menu item.
 - Real business contact data lives in the markup: phone `+380631405782`,
   email `sunprosto9@gmail.com`, Instagram `@sunprosto`. Don't invent alternatives.
 
-## Known gap
+## Lead delivery
 
-The calculator and CTA blocks collect a name and phone number but **do not submit
-anywhere** — the buttons only validate input, show a confirmation state and fire a
-`dataLayer` event. Wiring them to Netlify Forms (or a function) is the natural next
-step; read the `netlify-forms` skill and run its activation script if you do.
+All three lead forms (calculator, "виїзд майстра" in the steps section, final CTA)
+call `sendLead()` in `public/index.html`, which POSTs JSON to `/api/lead`. That path
+is served by `netlify/functions/lead.mts`, which formats the lead and sends it to
+Telegram. Keep the existing behaviour on the client: validation, the confirmation
+state and the `generate_lead` `dataLayer` push all still happen locally, and the
+POST is fire-and-forget so a failing request never blocks the confirmation.
+
+The function needs two environment variables, and neither may ever appear in the
+client bundle:
+
+| Variable | Meaning |
+| --- | --- |
+| `TELEGRAM_BOT_TOKEN` | token from @BotFather |
+| `TELEGRAM_CHAT_ID` | destination chat/group id; comma-separated for several |
+
+Without them the endpoint answers `503 not_configured` and logs a hint.
+
+## Mobile CSS
+
+The `<style>` block right before `</body>` holds the narrow-screen fixes and is the
+last stylesheet in the document, so it wins on cascade order. Two things it guards
+against, both of which broke the page below ~430 px before:
+
+- the header row (logo + phone + CTA + burger) did not fit, and the burger was
+  pushed completely off screen — the desktop CTA button is hidden under 768 px;
+- `.cta-lead-wrap` is switched to `display:flex` by the `.open` class, which makes
+  the `grid-template-columns:1fr` mobile rule dead — the column direction has to be
+  set on the flex container instead.
+
+Keep every rule there inside `@media(max-width:767px)` (or narrower) so the desktop
+layout stays untouched.
